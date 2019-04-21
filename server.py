@@ -4,7 +4,6 @@ import datetime, time
 import os
 import dataset
 import re
-from pprint import pprint
 
 app = Flask(__name__)
 
@@ -39,7 +38,6 @@ def listing(listing_id):
     primary_id='id', primary_type=db.types.string(10))
   results = table.find(listing=listing_id)
   rows = [row for row in results]
-  pprint(rows)
   return json.dumps(rows)
 
 @app.route('/today/<listing_id>',methods=['GET'])
@@ -54,7 +52,6 @@ def today(listing_id):
     start_date={"<=":today},
     end_date={">=":today})
   rows = [row for row in results]
-  pprint(rows)
   return json.dumps(rows)
 
 def upsert(table, data):
