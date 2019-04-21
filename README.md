@@ -1,5 +1,5 @@
 # smartbnb_endpoint
-Endpoint server for smartbnb webhooks.  The smartbnb.io webhooks is described [here](http://help.smartbnb.io/integrations-and-developers/webhooks-for-airbnb-and-homeaway)
+Endpoint server for [smartbnb webhooks](http://help.smartbnb.io/integrations-and-developers/webhooks-for-airbnb-and-homeaway).
 
 ## Dependencies
 1. python3
@@ -8,6 +8,14 @@ Endpoint server for smartbnb webhooks.  The smartbnb.io webhooks is described [h
 
 
 ## Run
-1. Run server `host='0.0.0.0', port=9004`
-
 ```$ python3 server.py```
+
+## API
+1. This is the url you enter in the smarbnb settings page:
+```http://<server_url>:9004/smartbnb```
+
+1. Get all the entries for a given listing:
+```http GET http://<server_url>:9004/listing/<listing_id>```
+
+1. Get the entries for today:
+```http GET http://<server_url>:9004/today/<listing_id>```
