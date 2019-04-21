@@ -11,11 +11,14 @@ Endpoint server for [smartbnb webhooks](http://help.smartbnb.io/integrations-and
 ```$ python3 server.py```
 
 ## API
-1. This is the url you enter in the smarbnb settings page:
+* This is the url you enter in the smarbnb settings page:
+
 ```http://<server_url>:9004/smartbnb```
 
-1. Get all the entries for a given listing:
+* Get all the entries for a given listing:
+
 ```http GET http://<server_url>:9004/listing/<listing_id>```
 
-1. Get the entries for today:
+* Get the entries for today (future endpoint for setting door lock codes):
+
 ```http GET http://<server_url>:9004/today/<listing_id>```
