@@ -69,7 +69,11 @@ def upsert(table, data):
     'listing': data['listing']['id'],
     'updated': datetime.datetime.utcnow().ctime()
   }
-  table.upsert(row, ['id'])
+  
+  if (row['status'] == 'cancelled'):
+    table.delete(id=row['id'])
+  else:
+    table.upsert(row, ['id'])
 
 # loads the files into the database
 def load_files():
