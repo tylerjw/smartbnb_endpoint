@@ -45,8 +45,7 @@ def today(listing_id):
   db = dataset.connect('sqlite:///database.db')
   table = db.get_table('reservations', 
     primary_id='id', primary_type=db.types.string(10))
-  # today = datetime.date.today().strftime("%Y-%m-%d")
-  today = '2019-06-25'
+  today = datetime.date.today().strftime("%Y-%m-%d")
   results = table.find(
     listing=listing_id, 
     start_date={"<=":today},
