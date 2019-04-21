@@ -61,7 +61,7 @@ def upsert(table, data):
     'id': data['code'],
     'phone': data['guest']['phone'],
     'name': data['guest']['first_name'] + ' ' + data['guest']['last_name'],
-    'code': data['guest']['phone'].strip()[-4:],
+    'code': re.sub('[^0-9]','',data['guest']['phone'])[-4:],
     'start_date': data['start_date'],
     'end_date': data['end_date'],
     'status': data['status'],
