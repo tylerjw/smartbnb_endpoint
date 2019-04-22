@@ -74,7 +74,9 @@ def smarbnb():
 
 @app.route('/listing/<listing_id>', methods=['GET'])
 def listing(listing_id):
-    rows = Reservation.query.filter(Reservation.listing == listing_id)
+    rows = Reservation.query.filter(
+        Reservation.listing == listing_id).order_by(
+        Reservation.start_date)
     return json.dumps([r.to_dict() for r in rows])
 
 @app.route('/today/<listing_id>', methods=['GET'])
@@ -83,7 +85,8 @@ def today(listing_id):
     rows = Reservation.query.filter(
         Reservation.listing == listing_id,
         Reservation.start_date <= today_date,
-        Reservation.end_date >= today_date)
+        Reservation.end_date >= today_date).order_by(
+        Reservation.start_date)
     return json.dumps([r.to_dict() for r in rows])
 
 ## helper functions #############################################
