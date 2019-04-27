@@ -4,7 +4,6 @@ Endpoint server for [smartbnb webhooks](http://help.smartbnb.io/integrations-and
 ## Dependencies
 1. python3
 1. [flask](http://flask.pocoo.org/docs/1.0/)
-1. [dataset](https://dataset.readthedocs.io/en/latest/api.html)
 
 
 ## Run
@@ -22,3 +21,7 @@ Endpoint server for [smartbnb webhooks](http://help.smartbnb.io/integrations-and
 * Get the entries for today (future endpoint for setting door lock codes):
 
 ```http GET http://<server_url>:9004/today/<listing_id>```
+
+* Get the entry for a specific day/time:
+
+```http GET http://weaveringrally2.duckdns.org:9004/code/22718956/2019_04_27_09_10```

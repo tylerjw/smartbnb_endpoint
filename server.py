@@ -6,6 +6,7 @@ import re
 
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from pprint import pprint
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -17,31 +18,28 @@ db = SQLAlchemy(app)
 class Reservation(db.Model):
     # reservation table row
     id = db.Column(db.String(10), primary_key=True)
-    phone = db.Column(db.String(20))
-    name = db.Column(db.String(80))
     code = db.Column(db.String(4))
-    status = db.Column(db.String(20))
-    listing = db.Column(db.String(10))
     start_date = db.Column(db.DateTime())
     end_date = db.Column(db.DateTime())
+    status = db.Column(db.String(20))
     listing = db.Column(db.Integer())
 
     # construct a Reservation json data
     def __init__(self, data):
         super().__init__()
-        self.id = data['code']
-        self.phone = data['guest']['phone']
-        self.name = data['guest']['first_name'] + ' ' + data['guest']['last_name']
-        self.code = re.sub('[^0-9]', '', data['guest']['phone'])[-4:]
-        self.start_date = datetime.datetime.strptime(data['start_date'], '%Y-%m-%d').date()
-        self.end_date = datetime.datetime.strptime(data['end_date'], '%Y-%m-%d').date()
-        self.status = data['status']
-        self.listing = data['listing']['id']
+        try:
+            self.id = data['code']
+            self.code = re.sub('[^0-9]', '', data['guest']['phone'])[-4:]
+            self.start_date = datetime.datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+            self.end_date = datetime.datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+            self.status = data['status']
+            self.listing = data['listing']['id']
+        except:
+            print("Error processing data")
+            pprint(data)
 
     def to_dict(self):
         return dict(id=self.id,
-                    phone=self.phone,
-                    name=self.name,
                     code=self.code,
                     start_date=self.start_date.strftime('%Y-%m-%d'),
                     end_date=self.end_date.strftime('%Y-%m-%d'),
@@ -61,13 +59,6 @@ def smarbnb():
 
     # update the database with this new data
     upsert(data)
-
-    #prune old values from database
-    today = datetime.date.today().strftime("%Y-%m-%d")
-    results = Reservation.query.filter(Reservation.end_date < today).all()
-    for row in results:
-        db.session.delete(row)
-        db.session.commit()
 
     #let the caller know this worked
     return "OK"
@@ -89,13 +80,35 @@ def today(listing_id):
         Reservation.start_date)
     return json.dumps([r.to_dict() for r in rows])
 
+@app.route('/code/<listing_id>/<date_time>', methods=['GET'])
+def code(listing_id, date_time):
+    test_date = datetime.datetime.strptime(date_time[:10],"%Y_%m_%d")
+    now = datetime.datetime.strptime(date_time,"%Y_%m_%d_%H_%M")
+    rows = Reservation.query.filter(
+        Reservation.listing == listing_id,
+        Reservation.start_date <= test_date,
+        Reservation.end_date >= test_date).order_by(
+        Reservation.start_date)
+    rows = [r.to_dict() for r in rows]
+    if len(rows) == 0:
+        return 'NONE'
+    elif len(rows) == 1:
+        return json.dumps(rows[0])
+    else:
+        if now.hour < 13:
+            return json.dumps(rows[0])
+        else:
+            return json.dumps(rows[1])
+
 ## helper functions #############################################
 def upsert(data):
     # create the new row object
     new_row = Reservation(data)
     # test to see if we should delete or add
     if data['status'] == 'cancelled':
-        db.session.delete(new_row)
+        new_row = Reservation.query.get(new_row.id)
+        if new_row:
+            db.session.delete(new_row)
     else:
         existing = Reservation.query.get(new_row.id)
         if existing:
@@ -106,6 +119,13 @@ def upsert(data):
             db.session.add(new_row)
     #commit the change
     db.session.commit()
+
+    #prune old values from database
+    today = datetime.date.today().strftime("%Y-%m-%d")
+    results = Reservation.query.filter(Reservation.end_date < today).all()
+    for row in results:
+        db.session.delete(row)
+        db.session.commit()
 
 # loads the files into the database
 def load_files():
