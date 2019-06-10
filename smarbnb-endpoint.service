@@ -1,0 +1,10 @@
+[Unit]
+Description=smartbnb-endpoint
+
+[Service]
+ExecStart=/usr/bin/python3 /root/smartbnb_endpoint/server.py /root/smartbnb_endpoint/data
+Environment=PYTHONUNBUFFERED=1
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
