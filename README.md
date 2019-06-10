@@ -12,16 +12,30 @@ Endpoint server for [smartbnb webhooks](http://help.smartbnb.io/integrations-and
 ## API
 * This is the url you enter in the smarbnb settings page:
 
-```http://<server_url>:9004/smartbnb```
+```http://<server_url>/smartbnb```
 
 * Get all the entries for a given listing:
 
-```http GET http://<server_url>:9004/listing/<listing_id>```
+```http GET http://<server_url>/listing/<listing_id>```
 
 * Get the entries for today (future endpoint for setting door lock codes):
 
-```http GET http://<server_url>:9004/today/<listing_id>```
+```http GET http://<server_url>/today/<listing_id>```
 
 * Get the entry for a specific day/time:
 
-```http GET http://weaveringrally2.duckdns.org:9004/code/22718956/2019_04_27_09_10```
+```http GET http://<server_url>/code/<listing_ID>/2019_04_27_09_10```
+
+## Setup server
+
+    apt update
+    apt install python3-pip
+    pip3 install flask flask_sqlalchemy
+    loginctl enable-linger $USER
+    cp smartbnb-endpoint.service /etc/systemd/system/
+    systemctl enable smartbnb-endpoint.service
+    systemctl start smartbnb-endpoint.service
+
+### Server Logs
+
+    journalctl --unit smartbnb-endpoint
