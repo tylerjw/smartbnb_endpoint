@@ -145,7 +145,6 @@ def load_files(data_dir):
 
 ## main ############################################################
 if __name__ == '__main__':
-    global data_dir
     if len(sys.argv) > 1:
         data_dir = sys.argv[1]
 
