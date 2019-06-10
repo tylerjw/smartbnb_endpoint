@@ -11,7 +11,8 @@ from pprint import pprint
 import traceback
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db_path = os.path.join(os.path.dirname(__file__), 'smartbnb-endpoint.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(db_path)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 data_dir = 'data'
