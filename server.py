@@ -7,6 +7,7 @@ import re
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from pprint import pprint
+import traceback
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -34,9 +35,10 @@ class Reservation(db.Model):
             self.end_date = datetime.datetime.strptime(data['end_date'], '%Y-%m-%d').date()
             self.status = data['status']
             self.listing = data['listing']['id']
-        except:
+        except Exception as e:
             print("Error processing data")
             pprint(data)
+            traceback.print_exc()
 
     def to_dict(self):
         return dict(id=self.id,
@@ -136,7 +138,8 @@ def load_files():
     for filename in files:
         with open(filename, 'r') as file:
             data = json.loads(file.read())
-            upsert(data)
+            if data['guest']['phone'] != None:
+                upsert(data)
 
 ## main ############################################################
 if __name__ == '__main__':
