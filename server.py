@@ -14,6 +14,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+data_dir = 'data'
 
 ## database objects ################################################
 
@@ -57,7 +58,7 @@ def smarbnb():
 
     # write the file for later processing
     timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
-    with open('data/{}.json'.format(timestamp), 'w') as outfile:
+    with open('{}/{}.json'.format(data_dir,timestamp), 'w') as outfile:
         json.dump(data, outfile)
 
     # update the database with this new data
@@ -144,9 +145,11 @@ def load_files(data_dir):
 
 ## main ############################################################
 if __name__ == '__main__':
-    data_dir = 'data'
+    global data_dir
     if len(sys.argv) > 1:
         data_dir = sys.argv[1]
+
+    print('Using data dir: {}'.format(data_dir))
 
     # create data directory if it doesn't exist
     if not os.path.exists(data_dir):
