@@ -130,9 +130,9 @@ def upsert(data):
         db.session.commit()
 
 # loads the files into the database
-def load_files():
+def load_files(data_dir):
     # import the files in order of modification time
-    files = [os.path.join('data', f) for f in os.listdir('data')]
+    files = [os.path.join(data_dir, f) for f in os.listdir(data_dir)]
     files.sort(key=os.path.getmtime)
 
     for filename in files:
@@ -143,15 +143,19 @@ def load_files():
 
 ## main ############################################################
 if __name__ == '__main__':
+    data_dir = 'data'
+    if len(sys.argv) > 1:
+        data_dir = sys.argv[1]
+
     # create data directory if it doesn't exist
-    if not os.path.exists('data'):
-        os.makedirs('data')
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
 
     # create the database
     db.create_all()
 
     # load the files
-    load_files()
+    load_files(data_dir)
 
     # start the server
     app.run(host='0.0.0.0', port=9004)
