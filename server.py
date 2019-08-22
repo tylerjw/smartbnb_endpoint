@@ -117,11 +117,10 @@ def upsert(data):
     else:
         existing = Reservation.query.get(new_row.id)
         if existing:
-            # update
-            existing = new_row
-        else:
-            # insert
-            db.session.add(new_row)
+            # delete old one
+            db.session.delete(existing)
+        # insert
+        db.session.add(new_row)
     #commit the change
     db.session.commit()
 
