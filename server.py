@@ -33,7 +33,10 @@ class Reservation(db.Model):
         super().__init__()
         try:
             self.id = data['code']
-            self.code = re.sub('[^0-9]', '', data['guest']['phone'])[-4:]
+            if (data['guest']['phone'] != None):
+                self.code = re.sub('[^0-9]', '', data['guest']['phone'])[-4:]
+            else:
+                self.code = ""
             self.start_date = datetime.datetime.strptime(data['start_date'], '%Y-%m-%d').date()
             self.end_date = datetime.datetime.strptime(data['end_date'], '%Y-%m-%d').date()
             self.status = data['status']
@@ -109,16 +112,21 @@ def code(listing_id, date_time):
 def upsert(data):
     # create the new row object
     new_row = Reservation(data)
+
     # test to see if we should delete or add
     if data['status'] == 'cancelled':
         new_row = Reservation.query.get(new_row.id)
         if new_row:
+            pprint("Deleting reservation: {}".format(new_row.to_dict()))
             db.session.delete(new_row)
     else:
         existing = Reservation.query.get(new_row.id)
         if existing:
             # delete old one
+            pprint("Updating reservation: {}".format(new_row.to_dict()))
             db.session.delete(existing)
+        else:
+            pprint("Inserting reservation: {}".format(new_row.to_dict()))
         # insert
         db.session.add(new_row)
     #commit the change
@@ -140,8 +148,7 @@ def load_files(data_dir):
     for filename in files:
         with open(filename, 'r') as file:
             data = json.loads(file.read())
-            if data['guest']['phone'] != None:
-                upsert(data)
+            upsert(data)
 
 ## main ############################################################
 if __name__ == '__main__':
