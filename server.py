@@ -121,16 +121,17 @@ def upsert(data):
             db.session.delete(new_row)
             db.session.commit()
     else:
+        # replace if it exists
         existing = Reservation.query.get(new_row.id)
         if existing:
             # delete old one
             pprint("Updating reservation: {}".format(new_row.to_dict()))
             db.session.delete(existing)
             db.session.commit()
-        else:
-            pprint("Inserting reservation: {}".format(new_row.to_dict()))
-            db.session.add(new_row)
-            db.session.commit()
+        # insert the new one
+        pprint("Inserting reservation: {}".format(new_row.to_dict()))
+        db.session.add(new_row)
+        db.session.commit()
 
     #prune old values from database
     today = datetime.date.today().strftime("%Y-%m-%d")
