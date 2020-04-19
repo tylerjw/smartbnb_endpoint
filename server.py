@@ -113,8 +113,8 @@ def upsert(data):
     # create the new row object
     new_row = Reservation(data)
 
-    # test to see if we should delete or add
-    if data['status'] == 'cancelled':
+    # if canceled or no code, delete
+    if data['status'] == 'cancelled' or len(new_row.code) == 0:
         new_row = Reservation.query.get(new_row.id)
         if new_row:
             pprint("Deleting reservation: {}".format(new_row.to_dict()))
